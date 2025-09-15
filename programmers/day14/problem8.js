@@ -1,25 +1,35 @@
 /**
- * 📌 문제 제목: H-Index
+ * 📌 문제 제목: 기능 개발
  * 🐶 난이도: level 2
  * 
- * -Index는 과학자의 생산성과 영향력을 나타내는 지표입니다. 어느 과학자의 H-Index를 나타내는 값인 h를 구하려고 합니다. 위키백과1에 따르면, H-Index는 다음과 같이 구합니다.
- * 어떤 과학자가 발표한 논문 n편 중, h번 이상 인용된 논문이 h편 이상이고 나머지 논문이 h번 이하 인용되었다면 h의 최댓값이 이 과학자의 H-Index입니다.
- * 어떤 과학자가 발표한 논문의 인용 횟수를 담은 배열 citations가 매개변수로 주어질 때, 이 과학자의 H-Index를 return 하도록 solution 함수를 작성해주세요.
+ * 프로그래머스 팀에서는 기능 개선 작업을 수행 중입니다. 각 기능은 진도가 100%일 때 서비스에 반영할 수 있습니다.
+ * 또, 각 기능의 개발속도는 모두 다르기 때문에 뒤에 있는 기능이 앞에 있는 기능보다 먼저 개발될 수 있고, 이때 뒤에 있는 기능은 앞에 있는 기능이 배포될 때 함께 배포됩니다.
+ * 먼저 배포되어야 하는 순서대로 작업의 진도가 적힌 정수 배열 progresses와 각 작업의 개발 속도가 적힌 정수 배열 speeds가 주어질 때 각 배포마다 몇 개의 기능이 배포되는지를 return 하도록 solution 함수를 완성하세요.
  * 
  */
 
-function solution(citations) {
-    citations.sort((a, b) => b - a);
+function solution(progresses, speeds) {
+    const result = [];
     
-    let h = 0;
-    
-    for(let i = 0; i < citations.length; i++) {
-        if(citations[i] >= i + 1) {
-            h = h + 1
+    for(let i = 0; i < speeds.length; i++) {
+        const lastResult = result[result.length - 1];
+        const enableDay = enableProgressDays(progresses[i], speeds[i]);
+        
+        if(lastResult) {
+            const lastMaxDay = Math.max(...result[result.length - 1]);
+            if(lastMaxDay >= enableDay) {
+                lastResult.push(enableDay)
+            } else {
+                result.push([enableDay]);
+            }
         } else {
-            break;
+            result.push([enableDay])
         }
     }
     
-    return h;
+    return result.map((a) => a.length);
+}
+
+const enableProgressDays = (progress, speed) => {
+    return Math.ceil((100 - progress) / speed)
 }
